@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sağlıkçı Paneli</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- GENEL SAYFA YAPISI --- */
+        body { 
+            font-family: 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif;
+            text-align: center; 
+            margin: 0;
+            padding: 40px;
+            min-height: 100vh;
+
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); 
+            color: #34495e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        /* --- BAŞLIK ALANI --- */
+        .header-area {
+            margin-bottom: 50px;
+            animation: fadeInDown 1s ease;
+        }
+
+        h1 { 
+            color: #2c3e50; 
+            margin-bottom: 10px; 
+            font-weight: 800; 
+            letter-spacing: -0.5px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle { 
+            color: #7f8c8d; 
+            font-size: 1.1em; 
+            font-weight: 300;
+        }
+
+        /* --- KART DÜZENİ (FLEX) --- */
+        .container { 
+            display: flex; 
+            justify-content: center; 
+            gap: 40px; 
+            flex-wrap: wrap; 
+            max-width: 1200px;
+            width: 100%;
+            animation: fadeInUp 1s ease;
+        }
+        
+        .card-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 400px; 
+            margin-bottom: 30px;
+        }
+
+        /* --- MODERN GLASS KART TASARIMI --- */
+        .card {
+            background: rgba(255, 255, 255, 0.85); /* Hafif şeffaf beyaz */
+            backdrop-filter: blur(12px); /* Buzlu cam etkisi */
+            width: 100%;
+            padding: 35px; 
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05), 0 5px 15px rgba(0,0,0,0.03); /* Çok yumuşak gölge */
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Yaylanma efekti */
+            text-decoration: none;
+            color: #333;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.6); 
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+        
+        .card:hover { 
+            transform: translateY(-10px); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1); 
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        /* Kart Başlık Çizgileri (Gradient) */
+        .bedensel { border-top: 6px solid #e74c3c; }
+        .ruhsal { border-top: 6px solid #3498db; }
+
+        .card h2 { 
+            margin-top: 15px; 
+            margin-bottom: 25px; 
+            font-size: 1.5em; 
+            font-weight: 700; 
+        }
+        
+        .bedensel h2 { color: #c0392b; }
+        .ruhsal h2 { color: #2980b9; }
+
+        /* --- BİLDİRİM KUTUCUKLARI (SADELEŞTİRİLMİŞ) --- */
+        .stat-box {
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            text-align: left;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: 0.3s;
+            border: none; /* Kenar çizgilerini kaldırdık, daha temiz */
+            font-weight: 500;
+        }
+        
+        .stat-box i { font-size: 1.4em; width: 30px; text-align: center; }
+
+        /* Mavi (Bilgi) */
+        .stat-randevu {
+            background-color: #f0f7fa;
+            color: #2980b9;
+            box-shadow: inset 4px 0 0 #3498db; /* İnce sol çizgi */
+        }
+
+/* Kırmızı (Alarm - Canlı ve Hareketli) */
+        .stat-kritik {
+            background-color: #fff5f5;
+            color: #c0392b;
+            box-shadow: inset 4px 0 0 #e74c3c;
+            font-weight: bold;
+            /* Hareketi sağlayan sihirli satır: */
+            animation: heartbeat 2s infinite ease-in-out; 
+            transform-origin: center;
+        }
+
+        /* Kalp Atışı Animasyonu (Daha Belirgin) */
+        @keyframes heartbeat {
+            0% { 
+                transform: scale(1); 
+                box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+            }
+            50% { 
+                transform: scale(1.03); /* %3 Büyür */
+                box-shadow: 0 4px 10px rgba(231, 76, 60, 0.2); /* Arkaya hafif kırmızı gölge atar */
+            }
+            100% { 
+                transform: scale(1); 
+                box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+            }
+        }
+        
+        /* Boş Durum İkonu */
+        .empty-state {
+            margin-top: 30px;
+            color: #bdc3c7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .empty-state i { font-size: 4em; opacity: 0.3; }
+        .empty-state p { margin: 0; font-size: 0.9em; }
+
+        /* --- BUTONLAR --- */
+        .quick-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            width: 100%;
+        }
+        
+        .btn-action {
+            flex: 1; 
+            padding: 14px; 
+            border-radius: 50px; /* Oval butonlar (Giriş sayfasıyla uyumlu) */
+            text-decoration: none; 
+            color: white;
+            font-weight: 600; 
+            font-size: 0.95em; 
+            transition: 0.3s; 
+            border: none;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
+
+        .btn-add { background: linear-gradient(90deg, #2ecc71, #27ae60); }
+        .btn-list { background: linear-gradient(90deg, #95a5a6, #7f8c8d); }
+
+        /* --- ÇIKIŞ BUTONU --- */
+        .cikis-btn { 
+            margin-top: 50px; 
+            color: #e74c3c; 
+            text-decoration: none; 
+            font-weight: 600; 
+            border: 2px solid #e74c3c; 
+            padding: 10px 35px; 
+            border-radius: 50px; 
+            transition: 0.3s;
+            background: transparent;
+        }
+        .cikis-btn:hover { background-color: #e74c3c; color: white; box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3); }
+
+        /* Giriş Animasyonları */
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="header-area">
+        <h1>Hoşgeldin, <span th:text="${kullanici.adSoyad}">Sağlıkçı</span>! 👋</h1>
+        <p class="subtitle">Güncel sağlık bildirimleri ve hasta takip paneli.</p>
+    </div>
+
+    <div class="container">
+        
+        <div class="card-wrapper">
+            <div class="card bedensel">
+                <i class="fa-solid fa-heart-pulse fa-3x" style="color:#e74c3c; margin-bottom:10px; opacity: 0.8;"></i>
+                <h2>Bedensel Sağlık</h2>
+                
+                <div th:if="${bedenselKritikRandevu > 0}" class="stat-box stat-kritik">
+                    <i class="fa-solid fa-clock"></i>
+                    <span>DİKKAT: [[${bedenselKritikRandevu}]] Randevu Yaklaşıyor!</span>
+                </div>
+
+                <div th:if="${bedenselToplamRandevu > 0}" class="stat-box stat-randevu">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span th:text="${bedenselToplamRandevu + ' Toplam Randevu Bekliyor'}"></span>
+                </div>
+
+                <div th:if="${bedenselKritikIlac > 0}" class="stat-box stat-kritik">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>ALARM: [[${bedenselKritikIlac}]] İlacın Süresi Doluyor!</span>
+                </div>
+
+                <div th:if="${bedenselKritikRandevu == 0 and bedenselToplamRandevu == 0 and bedenselKritikIlac == 0}" class="empty-state">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <p>Her şey yolunda, bekleyen işlem yok.</p>
+                </div>
+
+            </div>
+
+            <div class="quick-actions">
+                <a href="/bedensel/ekle" class="btn-action btn-add"><i class="fa-solid fa-plus"></i> Hasta Ekle</a>
+                <a href="/bedensel" class="btn-action btn-list"><i class="fa-solid fa-list-ul"></i> Listele</a>
+            </div>
+        </div>
+
+        <div class="card-wrapper">
+            <div class="card ruhsal">
+                <i class="fa-solid fa-brain fa-3x" style="color:#3498db; margin-bottom:10px; opacity: 0.8;"></i>
+                <h2>Ruhsal Sağlık</h2>
+                
+                <div th:if="${ruhsalKritikRandevu > 0}" class="stat-box stat-kritik">
+                    <i class="fa-solid fa-clock"></i>
+                    <span>DİKKAT: [[${ruhsalKritikRandevu}]] Randevu Yaklaşıyor!</span>
+                </div>
+
+                <div th:if="${ruhsalToplamRandevu > 0}" class="stat-box stat-randevu">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span th:text="${ruhsalToplamRandevu + ' Toplam Randevu Bekliyor'}"></span>
+                </div>
+
+                <div th:if="${ruhsalKritikIlac > 0}" class="stat-box stat-kritik">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>ALARM: [[${ruhsalKritikIlac}]] İlacın Süresi Doluyor!</span>
+                </div>
+
+                <div th:if="${ruhsalKritikRandevu == 0 and ruhsalToplamRandevu == 0 and ruhsalKritikIlac == 0}" class="empty-state">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <p>Her şey yolunda, bekleyen işlem yok.</p>
+                </div>
+
+            </div>
+
+            <div class="quick-actions">
+                <a href="/ruhsal/ekle" class="btn-action btn-add"><i class="fa-solid fa-plus"></i> Hasta Ekle</a>
+                <a href="/ruhsal" class="btn-action btn-list"><i class="fa-solid fa-list-ul"></i> Listele</a>
+            </div>
+        </div>
+
+    </div>
+
+    <a href="/cikis" class="cikis-btn"><i class="fa-solid fa-power-off"></i> Oturumu Kapat</a>
+
+    <style>
+        .bildirim-kutusu { position: fixed; top: 20px; right: 20px; min-width: 300px; padding: 15px 20px; border-radius: 8px; color: white; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 9999; display: flex; align-items: center; gap: 10px; transform: translateX(120%); transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+        .bildirim-basarili { background: linear-gradient(135deg, #2ecc71, #27ae60); border-left: 5px solid #1e8449; }
+        .bildirim-hata { background: linear-gradient(135deg, #e74c3c, #c0392b); border-left: 5px solid #96281b; }
+        .bildirim-goster { transform: translateX(0); }
+    </style>
+    <div th:if="${mesaj}" id="bildirimAlani" th:classappend="${mesajTuru == 'basarili' ? 'bildirim-basarili' : 'bildirim-hata'}" class="bildirim-kutusu">
+        <i th:if="${mesajTuru == 'basarili'}" class="fa-solid fa-check-circle" style="font-size: 1.5em;"></i>
+        <i th:if="${mesajTuru == 'hata'}" class="fa-solid fa-trash-can" style="font-size: 1.5em;"></i>
+        <span th:text="${mesaj}">İşlem Başarılı!</span>
+    </div>
+    <script th:if="${mesaj}">
+        window.onload = function() {
+            var kutu = document.getElementById("bildirimAlani");
+            if (kutu) {
+                setTimeout(() => { kutu.classList.add("bildirim-goster"); }, 100);
+                setTimeout(() => { kutu.classList.remove("bildirim-goster"); }, 4000);
+            }
+        };
+    </script>
+
+</body>
+</html>

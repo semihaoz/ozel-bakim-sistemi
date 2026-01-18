@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Kayıt Ol - Sağlık Takip Sistemi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- GENEL AYARLAR (Giriş sayfasıyla aynı) --- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh; /* height yerine min-height, form uzun olursa taşmasın */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Hareketli Arka Plan */
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            padding: 20px; /* Mobilde kenarlara yapışmasın */
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- CAM EFEKTLİ KART --- */
+        .register-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 40px 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            width: 400px; /* Girişten biraz daha geniş */
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- LOGO VE BAŞLIK --- */
+        .logo-area {
+            font-size: 3em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        h2 { color: #34495e; margin-bottom: 5px; font-weight: 700; }
+        p.subtitle { color: #7f8c8d; font-size: 0.9em; margin-bottom: 30px; }
+
+        /* --- INPUT ALANLARI --- */
+        .input-group { position: relative; margin-bottom: 20px; text-align: left; }
+        .input-group i {
+            position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+            color: #95a5a6; transition: 0.3s;
+        }
+        .input-field {
+            width: 100%; padding: 15px 15px 15px 45px; border: 2px solid #ecf0f1;
+            border-radius: 50px; outline: none; font-size: 1em; box-sizing: border-box;
+            transition: 0.3s; background-color: #f9f9f9;
+        }
+        .input-field:focus { border-color: #2ecc71; background-color: white; box-shadow: 0 0 10px rgba(46, 204, 113, 0.1); }
+        .input-field:focus + i { color: #2ecc71; }
+
+        /* --- BUTONLAR --- */
+        .btn-kayit {
+            width: 100%; padding: 15px; border: none; border-radius: 50px;
+            background: linear-gradient(90deg, #2ecc71, #27ae60); /* Yeşil tonları */
+            color: white; font-size: 1.1em; font-weight: bold; cursor: pointer;
+            transition: 0.3s; box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+            margin-top: 10px;
+        }
+        .btn-kayit:hover {
+            transform: translateY(-2px); box-shadow: 0 8px 20px rgba(46, 204, 113, 0.6);
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+        }
+
+        .link-giris {
+            display: block; margin-top: 20px; color: #7f8c8d; text-decoration: none;
+            font-size: 0.9em; transition: 0.3s;
+        }
+        .link-giris:hover { color: #2ecc71; text-decoration: underline; }
+
+    </style>
+</head>
+<body>
+
+    <div class="register-card">
+        
+        <div class="logo-area">
+            <i class="fa-solid fa-user-plus"></i> </div>
+        
+        <h2>Hesap Oluştur</h2>
+        <p class="subtitle">Aramıza katılmak için bilgilerinizi girin</p>
+
+        <form action="/kayit" method="post" th:object="${personel}"> 
+            
+            <div class="input-group">
+                <input type="text" th:field="*{adSoyad}" class="input-field" placeholder="Ad Soyad" required>
+                <i class="fa-solid fa-user"></i>
+            </div>
+
+            <div class="input-group">
+                <input type="text" th:field="*{kullaniciAdi}" class="input-field" placeholder="Kullanıcı Adı" required>
+                <i class="fa-solid fa-user-tag"></i>
+            </div>
+
+            <div class="input-group">
+                <input type="password" th:field="*{sifre}" class="input-field" placeholder="Şifre" required>
+                <i class="fa-solid fa-lock"></i>
+            </div>
+
+            <div class="input-group">
+                <input type="tel" th:field="*{telefon}" class="input-field" placeholder="Telefon (Örn: 5551234567)" required>
+                <i class="fa-solid fa-phone"></i>
+            </div>
+
+            <button type="submit" class="btn-kayit">
+                Kayıt Ol <i class="fa-solid fa-arrow-right"></i>
+            </button>
+
+        </form>
+
+        <a href="/giris" class="link-giris">Zaten hesabın var mı? <b>Giriş Yap</b></a>
+
+    </div>
+
+</body>
+</html>

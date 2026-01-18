@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Randevu Oluştur</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f6f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .form-box { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 400px; text-align: center; }
+        h2 { color: #2c3e50; margin-bottom: 20px; }
+        input, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .btn-save { background-color: #3498db; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 10px; }
+        .btn-save:hover { background-color: #2980b9; }
+        .btn-cancel { display: block; margin-top: 15px; color: #7f8c8d; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <div class="form-box">
+        <h2>📅 Randevu Oluştur</h2>
+        <p>Hasta: <b th:text="${hasta.adSoyad}">Ali Can</b></p>
+
+        <form action="/hasta/randevu-kaydet" method="post">
+            <input type="hidden" name="hastaId" th:value="${hasta.id}">
+
+            <label style="float:left; font-size:0.9em; color:#777;">Randevu Tarihi:</label>
+            <input type="datetime-local" name="randevuTarihi" required>
+
+            <label style="float:left; font-size:0.9em; color:#777;">Randevu Açıklaması:</label>
+            <textarea name="randevuAciklamasi" rows="4" placeholder="Örn: Rutin kontrol, Terapi seansı..." required></textarea>
+
+            <button type="submit" class="btn-save">Randevuyu Kaydet</button>
+        </form>
+
+        <a th:href="@{/hasta/detay/{id}(id=${hasta.id})}" class="btn-cancel">İptal / Geri Dön</a>
+    </div>
+
+</body>
+</html>

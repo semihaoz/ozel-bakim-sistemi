@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Giriş Yap - Sağlık Takip Sistemi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- GENEL AYARLAR --- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Hareketli Arka Plan */
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            overflow: hidden;
+        }
+
+        /* Arka Plan Animasyonu */
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- CAM EFEKTLİ KART (Glassmorphism) --- */
+        .login-card {
+            background: rgba(255, 255, 255, 0.9); /* Yarı saydam beyaz */
+            backdrop-filter: blur(10px); /* Buzlu cam etkisi */
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            width: 350px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            animation: slideUp 0.8s ease-out; /* Sayfa açılış animasyonu */
+        }
+
+        /* Kartın aşağıdan yukarı kayarak gelmesi */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- LOGO VE BAŞLIK --- */
+        .logo-area {
+            font-size: 3em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            color: #34495e;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+        
+        p.subtitle {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 30px;
+        }
+
+        /* --- INPUT ALANLARI --- */
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #95a5a6;
+            transition: 0.3s;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 15px 15px 15px 45px; /* İkon için soldan boşluk */
+            border: 2px solid #ecf0f1;
+            border-radius: 50px; /* Yuvarlak kenarlar */
+            outline: none;
+            font-size: 1em;
+            box-sizing: border-box; /* Padding taşmasını engeller */
+            transition: 0.3s;
+            background-color: #f9f9f9;
+        }
+
+        /* Input'a tıklayınca olan efektler */
+        .input-field:focus {
+            border-color: #3498db;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.1);
+        }
+
+        .input-field:focus + i {
+            color: #3498db;
+        }
+
+        /* --- BUTONLAR --- */
+        .btn-giris {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            color: white;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+            margin-top: 10px;
+        }
+
+        .btn-giris:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.6);
+            background: linear-gradient(90deg, #2980b9, #3498db);
+        }
+
+        .link-kayit {
+            display: block;
+            margin-top: 20px;
+            color: #7f8c8d;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: 0.3s;
+        }
+        
+        .link-kayit:hover {
+            color: #3498db;
+            text-decoration: underline;
+        }
+        
+        /* Hata Mesajı (Login Fail) */
+        .login-error {
+            color: #e74c3c;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            background-color: #fadbd8;
+            padding: 10px;
+            border-radius: 8px;
+            display: none; /* Varsayılan gizli */
+        }
+        /* URL'de ?error varsa göster */
+        :target .login-error { display: block; } /* Basit CSS trick */
+
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        
+        <div class="logo-area">
+            <i class="fa-solid fa-user-doctor"></i> </div>
+        
+        <h2>Hoşgeldiniz</h2>
+        <p class="subtitle">Sağlık Takip Sistemine Giriş</p>
+
+        <div th:if="${param.error}" style="color: #e74c3c; background: #fadbd8; padding: 10px; border-radius: 10px; margin-bottom: 15px; font-size: 0.9em;">
+            <i class="fa-solid fa-circle-exclamation"></i> Kullanıcı adı veya şifre hatalı!
+        </div>
+
+        <form action="/giris-yap" method="post"> <div class="input-group">
+                <input type="text" name="kullaniciAdi" class="input-field" placeholder="Kullanıcı Adı" required>
+                <i class="fa-solid fa-user"></i>
+            </div>
+
+            <div class="input-group">
+                <input type="password" name="sifre" class="input-field" placeholder="Şifre" required>
+                <i class="fa-solid fa-lock"></i>
+            </div>
+
+            <button type="submit" class="btn-giris">
+                Giriş Yap <i class="fa-solid fa-arrow-right-to-bracket"></i>
+            </button>
+
+        </form>
+
+        <a href="/kayit" class="link-kayit">Hesabın yok mu? <b>Kayıt Ol</b></a>
+
+    </div>
+
+    <style>
+        .bildirim-kutusu { position: fixed; top: 20px; right: 20px; min-width: 300px; padding: 15px 20px; border-radius: 8px; color: white; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 9999; display: flex; align-items: center; gap: 10px; transform: translateX(120%); transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+        .bildirim-basarili { background: linear-gradient(135deg, #2ecc71, #27ae60); border-left: 5px solid #1e8449; }
+        .bildirim-goster { transform: translateX(0); }
+    </style>
+
+    <div th:if="${mesaj}" id="bildirimAlani" class="bildirim-kutusu bildirim-basarili">
+        <i class="fa-solid fa-check-circle" style="font-size: 1.5em;"></i>
+        <span th:text="${mesaj}">İşlem Başarılı!</span>
+    </div>
+
+    <script th:if="${mesaj}">
+        window.onload = function() {
+            var kutu = document.getElementById("bildirimAlani");
+            if (kutu) {
+                setTimeout(() => { kutu.classList.add("bildirim-goster"); }, 100);
+                setTimeout(() => { kutu.classList.remove("bildirim-goster"); }, 4000);
+            }
+        };
+    </script>
+
+</body>
+</html>

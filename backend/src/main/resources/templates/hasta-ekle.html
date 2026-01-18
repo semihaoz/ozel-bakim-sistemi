@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${baslik}">Hasta Ekle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- GENEL SAYFA YAPISI (Panel ile uyumlu) --- */
+        body { 
+            font-family: 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            margin: 0; padding: 40px 20px; min-height: 100vh; color: #34495e;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        /* --- CAM EFEKTLİ FORM KONTEYNERİ --- */
+        .glass-form-container {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            width: 100%; max-width: 500px; /* Form için ideal genişlik */
+            padding: 50px 40px;
+            border-radius: 30px; /* Daha oval köşeler */
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            text-align: center;
+            animation: zoomIn 0.6s ease;
+        }
+
+        h2 { color: #2c3e50; margin-bottom: 30px; font-weight: 700; font-size: 1.8em; }
+        
+        /* --- MODERN INPUT GRUPLARI (Giriş/Kayıt sayfası tarzı) --- */
+        .input-group { position: relative; margin-bottom: 20px; text-align: left; }
+        .input-group i {
+            position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
+            color: #bdc3c7; transition: 0.3s; font-size: 1.1em;
+        }
+        .form-input {
+            width: 100%; padding: 15px 20px 15px 55px; /* İkon için soldan boşluk */
+            border: 2px solid #f0f2f5; border-radius: 50px; outline: none;
+            font-size: 1em; box-sizing: border-box; transition: 0.3s; background-color: #f8f9fa;
+            color: #2c3e50;
+            font-family: inherit; /* Fontu miras al */
+        }
+        .form-input:focus { border-color: #3498db; background-color: white; box-shadow: 0 0 15px rgba(52, 152, 219, 0.1); }
+        .form-input:focus + i { color: #3498db; }
+
+        /* Select Kutusu İçin Özel Ayar */
+        select.form-input { appearance: none; cursor: pointer; }
+
+        /* --- BUTONLAR --- */
+        .btn-kaydet {
+            width: 100%; padding: 15px; border: none; border-radius: 50px;
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            color: white; font-size: 1.1em; font-weight: bold; cursor: pointer;
+            transition: 0.3s; box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+            margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 10px;
+        }
+        .btn-kaydet:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(46, 204, 113, 0.5); }
+
+        .link-iptal {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            margin-top: 25px; color: #95a5a6; text-decoration: none; font-weight: 600; transition: 0.3s;
+        }
+        .link-iptal:hover { color: #e74c3c; }
+
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <div class="glass-form-container">
+        <h2 th:text="${baslik}">Hasta Ekle</h2>
+
+        <form th:action="${kategoriId == 1 ? '/ruhsal/kaydet' : '/bedensel/kaydet'}" 
+              method="post" th:object="${hasta}">
+            
+            <input type="hidden" th:field="*{id}">
+
+            <div class="input-group">
+                <input type="text" th:field="*{adSoyad}" class="form-input" placeholder="Hastanın Adı Soyadı" required>
+                <i class="fa-solid fa-user-injured"></i>
+            </div>
+
+            <div style="display: flex; gap: 15px;">
+                <div class="input-group" style="flex: 1;">
+                    <input type="number" th:field="*{yas}" class="form-input" placeholder="Yaş" required>
+                    <i class="fa-solid fa-calendar-days"></i>
+                </div>
+                <div class="input-group" style="flex: 1;">
+                    <select th:field="*{cinsiyet}" class="form-input">
+                        <option value="Erkek">Erkek</option>
+                        <option value="Kadın">Kadın</option>
+                    </select>
+                    <i class="fa-solid fa-venus-mars"></i>
+                    <i class="fa-solid fa-chevron-down" style="left: auto; right: 20px; color: #bdc3c7; pointer-events: none;"></i>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <input type="text" th:field="*{hastalik}" class="form-input" placeholder="Hastalık / Tanı" required>
+                <i class="fa-solid fa-stethoscope"></i>
+            </div>
+
+            <div style="border-top: 1px solid #f0f2f5; margin: 25px 0; position: relative;">
+                 <span style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #fff; padding: 0 10px; color: #bdc3c7; font-size: 0.9em;">Vasi Bilgileri</span>
+            </div>
+
+            <div class="input-group">
+                <input type="text" th:field="*{vasiAdSoyad}" class="form-input" placeholder="Vasi Adı Soyadı" required>
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+
+            <div class="input-group">
+                <input type="tel" th:field="*{vasiTelefon}" class="form-input" placeholder="Vasi Telefonu" required>
+                <i class="fa-solid fa-phone"></i>
+            </div>
+
+            <button type="submit" class="btn-kaydet">
+                <i class="fa-solid fa-floppy-disk"></i> Kaydet
+            </button>
+
+        </form>
+
+        <a th:href="${kategoriId == 1 ? '/ruhsal' : '/bedensel'}" class="link-iptal">
+            <i class="fa-solid fa-xmark"></i> İptal et ve Listeye Dön
+        </a>
+
+    </div>
+
+</body>
+</html>

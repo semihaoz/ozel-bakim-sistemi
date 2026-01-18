@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>İlaç Yaz</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f6f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .form-box { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 400px; text-align: center; }
+        h2 { color: #2c3e50; margin-bottom: 20px; }
+        
+        /* Genel Input Stili */
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: inherit; }
+        
+        /* --- TARİH KUTUSU İÇİN ÖZEL AYAR (SİHİRLİ KISIM) --- */
+        input[type="date"] {
+            position: relative;
+            padding-right: 10px;
+            cursor: pointer; /* Fare üzerine gelince el işareti çıksın */
+        }
+
+       
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0; /* İkonu gizle ama tıklanabilirliği tut */
+            cursor: pointer;
+        }
+
+        /* Arka plana şık bir takvim ikonu koyalım (Sadece görsel) */
+        .date-wrapper {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        .date-wrapper::after {
+            content: "\f073"; /* FontAwesome Takvim İkonu Kodu */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #95a5a6;
+            pointer-events: none; /* Tıklamayı engellemesin */
+        }
+
+        .btn-save { background-color: #e67e22; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 10px; transition: 0.3s;}
+        .btn-save:hover { background-color: #d35400; }
+        .btn-cancel { display: block; margin-top: 15px; color: #7f8c8d; text-decoration: none; font-size: 0.9em; }
+        .btn-cancel:hover { color: #c0392b; }
+    </style>
+</head>
+<body>
+
+    <div class="form-box">
+        <div style="margin-bottom: 20px;">
+            <i class="fa-solid fa-pills fa-3x" style="color:#e67e22;"></i>
+        </div>
+        <h2>İlaç Tanımla</h2>
+        <p style="color:#7f8c8d;">Hasta: <b th:text="${hasta.adSoyad}" style="color:#2c3e50;">Ali Can</b></p>
+
+        <form action="/hasta/ilac-kaydet" method="post">
+            <input type="hidden" name="hastaId" th:value="${hasta.id}">
+
+            <div style="text-align: left;">
+                <label style="font-size:0.85em; color:#7f8c8d; margin-left: 5px;">İlaç Adı:</label>
+                <input type="text" name="ilacAdi" placeholder="Örn: Parol" required>
+            </div>
+
+            <div style="text-align: left;">
+                <label style="font-size:0.85em; color:#7f8c8d; margin-left: 5px;">Kullanım Dozajı:</label>
+                <input type="text" name="dozaj" placeholder="Örn: 500mg, 1 Tablet" required>
+            </div>
+
+            <div style="text-align: left;">
+                <label style="font-size:0.85em; color:#7f8c8d; margin-left: 5px;">Kullanım Sıklığı:</label>
+                <input type="text" name="kullanimSikligi" placeholder="Örn: Sabah-Akşam Tok" required>
+            </div>
+
+            <div style="text-align: left;">
+                <label style="font-size:0.85em; color:#7f8c8d; margin-left: 5px;">Başlangıç Tarihi:</label>
+                <div class="date-wrapper">
+                    <input type="date" name="baslangicTarihi" required>
+                </div>
+            </div>
+
+            <div style="text-align: left;">
+                <label style="font-size:0.85em; color:#7f8c8d; margin-left: 5px;">Bitiş Tarihi:</label>
+                <div class="date-wrapper">
+                    <input type="date" name="bitisTarihi" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-save">Kaydet ve Bitir</button>
+        </form>
+
+        <a th:href="@{/hasta/detay/{id}(id=${hasta.id})}" class="btn-cancel">İptal / Geri Dön</a>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${baslik}">Hasta Listesi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- GENEL SAYFA YAPISI (Panel ile uyumlu) --- */
+        body { 
+            font-family: 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); /* Sabit, ferah arka plan */
+            margin: 0;
+            padding: 40px 20px;
+            min-height: 100vh;
+            color: #34495e;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* --- CAM EFEKTLİ ANA KONTEYNER --- */
+        .glass-container {
+            background: rgba(255, 255, 255, 0.85); /* Hafif şeffaf beyaz */
+            backdrop-filter: blur(12px); /* Buzlu cam etkisi */
+            width: 100%;
+            max-width: 1100px;
+            padding: 40px; 
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05), 0 5px 15px rgba(0,0,0,0.03);
+            border: 1px solid rgba(255, 255, 255, 0.6); 
+            animation: fadeInUp 0.8s ease;
+        }
+
+        /* --- BAŞLIK VE ÜST ALAN --- */
+        .header-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f0f2f5;
+            padding-bottom: 20px;
+        }
+
+        h1 { 
+            color: #2c3e50; 
+            margin: 0; 
+            font-weight: 700; 
+            font-size: 1.8em;
+        }
+
+        .btn-back {
+            text-decoration: none;
+            color: #7f8c8d;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+            padding: 10px 20px;
+            border-radius: 50px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .btn-back:hover { color: #2c3e50; transform: translateX(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+
+        /* --- ARAMA KUTUSU --- */
+        .search-box {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+        }
+        .search-form {
+            display: flex;
+            gap: 10px;
+            background: white;
+            padding: 8px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
+            width: 100%;
+            max-width: 500px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 50px;
+            outline: none;
+            font-size: 1em;
+        }
+        .btn-search {
+            background: linear-gradient(90deg, #f39c12, #e67e22);
+            color: white; border: none; padding: 12px 25px; border-radius: 50px;
+            cursor: pointer; font-weight: 600; transition: 0.3s; display: flex; align-items: center; gap: 8px;
+        }
+        .btn-search:hover { transform: scale(1.05); box-shadow: 0 4px 10px rgba(243, 156, 18, 0.3); }
+        .btn-clear {
+            background: #ecf0f1; color: #7f8c8d; text-decoration: none;
+            padding: 12px 20px; border-radius: 50px; display: flex; align-items: center; transition: 0.3s;
+        }
+        .btn-clear:hover { background: #bdc3c7; color: white; }
+
+        /* --- MODERN TABLO TASARIMI --- */
+        .modern-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; } /* Satır arası boşluk */
+        
+        .modern-table th {
+            text-align: left; padding: 15px 25px; color: #95a5a6; font-weight: 600;
+            text-transform: uppercase; font-size: 0.85em; letter-spacing: 1px;
+        }
+        
+        .modern-table tbody tr {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            transition: all 0.3s;
+        }
+        .modern-table tbody tr:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+
+        .modern-table td {
+            padding: 20px 25px;
+            border-top: 1px solid #f4f6f9;
+            border-bottom: 1px solid #f4f6f9;
+        }
+        /* Satırların kenarlarını yuvarlatma */
+        .modern-table td:first-child { border-top-left-radius: 15px; border-bottom-left-radius: 15px; border-left: 1px solid #f4f6f9; }
+        .modern-table td:last-child { border-top-right-radius: 15px; border-bottom-right-radius: 15px; border-right: 1px solid #f4f6f9; }
+
+        /* --- KRİTİK SATIR (Modernleştirilmiş) --- */
+        .satir-kritik td {
+            background-color: #fff5f5 !important; /* Çok hafif kırmızı */
+            color: #c0392b;
+        }
+        .satir-kritik td:first-child {
+            box-shadow: inset 4px 0 0 #e74c3c; /* Sol tarafa ince kırmızı çizgi */
+        }
+        .uyari-ikonu {
+            color: #e74c3c; margin-right: 10px; font-size: 1.1em;
+            animation: pulse 2s infinite;
+        }
+
+        /* --- İŞLEM BUTONLARI --- */
+        .action-buttons { display: flex; gap: 8px; }
+        .btn-islem {
+            padding: 8px 12px; border-radius: 10px; text-decoration: none;
+            color: white !important; font-size: 0.85em; font-weight: 600;
+            border: none; cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .btn-islem:hover { opacity: 0.9; transform: translateY(-2px); }
+        .btn-detay   { background: linear-gradient(90deg, #3498db, #2980b9); }
+        .btn-duzenle { background: linear-gradient(90deg, #f1c40f, #f39c12); }
+        .btn-sil     { background: linear-gradient(90deg, #e74c3c, #c0392b); }
+
+        .bos-mesaj { text-align: center; color: #95a5a6; margin-top: 40px; font-size: 1.1em; font-style: italic; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.1); } 100% { opacity: 1; transform: scale(1); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="glass-container">
+        <div class="header-area">
+            <a href="/panel" class="btn-back"><i class="fa-solid fa-arrow-left-long"></i> Panele Dön</a>
+            <h1 th:text="${baslik}">Hasta Listesi</h1>
+            <div style="width: 120px;"></div> </div>
+
+        <div class="search-box">
+            <form method="get" class="search-form">
+                <input type="text" name="arama" th:value="${param.arama}" class="search-input" placeholder="Hasta adı ile ara...">
+                <button type="submit" class="btn-search"><i class="fa-solid fa-search"></i> Ara</button>
+                <a th:if="${param.arama}" href="?" class="btn-clear"><i class="fa-solid fa-times"></i></a>
+            </form>
+        </div>
+
+        <div th:if="${hastalar.empty}" class="bos-mesaj">
+            <i class="fa-regular fa-folder-open fa-3x" style="margin-bottom: 15px; opacity: 0.5;"></i><br>
+            <span th:if="${param.arama}">Aradığınız kriterde hasta bulunamadı.</span>
+            <span th:unless="${param.arama}">Henüz bu kategoride kayıtlı hasta yok.</span>
+        </div>
+
+        <table th:if="${!hastalar.empty}" class="modern-table">
+            <thead>
+                <tr>
+                    <th>Ad Soyad</th>
+                    <th>Yaş</th>
+                    <th>Hastalık/Tanı</th>
+                    <th>Vasi</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="hasta : ${hastalar}" th:classappend="${hasta.randevusuVarMi} ? 'satir-kritik' : ''">
+                    <td>
+                        <i th:if="${hasta.randevusuVarMi}" class="fa-solid fa-circle-exclamation uyari-ikonu" title="Yaklaşan Randevusu Var!"></i>
+                        <span th:text="${hasta.adSoyad}" style="font-weight: 600;"></span>
+                    </td>
+                    <td th:text="${hasta.yas}"></td>
+                    <td th:text="${hasta.hastalik}"></td>
+                    <td th:text="${hasta.vasiAdSoyad}"></td>
+                    <td>
+                        <div class="action-buttons">
+                            <a th:href="@{/hasta/detay/{id}(id=${hasta.id})}" class="btn-islem btn-detay"><i class="fa-regular fa-eye"></i></a>
+                            <a th:href="@{/hasta/duzenle/{id}(id=${hasta.id})}" class="btn-islem btn-duzenle"><i class="fa-regular fa-pen-to-square"></i></a>
+                            <a th:href="@{/hasta/sil/{id}(id=${hasta.id})}" class="btn-islem btn-sil" onclick="return confirm('Silmek istediğine emin misin?');"><i class="fa-regular fa-trash-can"></i></a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    </body>
+</html>

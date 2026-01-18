@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>CareFlow - Personel Kayıt</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #e0f7fa; /* Hastane mavisi :) */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 350px;
+        }
+        h2 { text-align: center; color: #00796b; }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #00796b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover { background-color: #004d40; }
+        #sonuc {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>👨‍⚕️ Personel Kayıt</h2>
+        
+        <input type="text" id="adSoyad" placeholder="Ad Soyad Giriniz">
+        <input type="text" id="kullaniciAdi" placeholder="Kullanıcı Adı Belirle">
+        <input type="password" id="sifre" placeholder="Şifre Belirle">
+        
+        <button onclick="kaydet()">Veritabanına Kaydet</button>
+
+        <div id="sonuc"></div>
+    </div>
+
+    <script>
+        function kaydet() {
+            // 1. Kutulardaki verileri alalım
+            var ad = document.getElementById("adSoyad").value;
+            var kul = document.getElementById("kullaniciAdi").value;
+            var sif = document.getElementById("sifre").value;
+
+            // 2. Java'daki Controller adresimize istek atalım (Fetch API)
+            // Backend'de yazdığımız: /personel/ekle?ad=...&kullanici=... formatına çeviriyoruz
+            var adres = "/personel/ekle?ad=" + ad + "&kullanici=" + kul + "&sifre=" + sif;
+
+            fetch(adres)
+                .then(response => {
+                    if(response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error("Bir hata oluştu");
+                    }
+                })
+                .then(data => {
+                    // 3. Başarılı olursa burası çalışır
+                    document.getElementById("sonuc").innerText = "✅ Başarılı! Kayıt ID: " + data.id;
+                    // Kutuları temizle
+                    document.getElementById("adSoyad").value = "";
+                    document.getElementById("kullaniciAdi").value = "";
+                    document.getElementById("sifre").value = "";
+                })
+                .catch(error => {
+                    document.getElementById("sonuc").innerText = "❌ Hata oluştu! Kullanıcı adı alınmış olabilir.";
+                    document.getElementById("sonuc").style.color = "red";
+                });
+        }
+    </script>
+
+</body>
+</html>w
